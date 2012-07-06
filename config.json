@@ -1,0 +1,14 @@
+{
+	"port":8080,
+	"paths":
+	{
+		"htdocs":"C:\\Users\\Jaco\\Documents\\Lugubris\\htdocs",
+		"lib":"C:\\Users\\Jaco\\Documents\\Lugubris\\libs",
+		"routes":"C:\\Users\\Jaco\\Documents\\Lugubris\\routes.json"
+	},
+	"session_manager":
+	{
+		"type":"filesystem",
+		"save_path":"C:\\Users\\Jaco\\Documents\\Lugubris\\sessions"
+	}
+}
