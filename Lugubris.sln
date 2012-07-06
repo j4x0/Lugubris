@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lugubris", "Lugubris\Lugubris.csproj", "{E009B203-B75E-49CE-8FDD-9917BEEBD759}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LugubrisServer", "LugubrisServer\LugubrisServer.csproj", "{A09AB58C-61E7-4741-9844-9853DD523078}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A09AB58C-61E7-4741-9844-9853DD523078}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A09AB58C-61E7-4741-9844-9853DD523078}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A09AB58C-61E7-4741-9844-9853DD523078}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A09AB58C-61E7-4741-9844-9853DD523078}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E009B203-B75E-49CE-8FDD-9917BEEBD759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E009B203-B75E-49CE-8FDD-9917BEEBD759}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E009B203-B75E-49CE-8FDD-9917BEEBD759}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E009B203-B75E-49CE-8FDD-9917BEEBD759}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
