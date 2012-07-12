@@ -24,25 +24,24 @@ using SimpleJson;
 
 namespace Lugubris
 {
-    public class LugubrisSession 
+    public class InternetMediaTypes
     {
-        public IDictionary<string, object> Data { get; private set; }
+        private Dictionary<string, string> mediaTypes;
 
-        public LugubrisSession(IDictionary<string, object> data)
+        public InternetMediaTypes(Dictionary<string,string> mediaTypes)
         {
-            this.Data = data;
+            this.mediaTypes = mediaTypes;
         }
 
-        public LugubrisSession() : this(new Dictionary<string, object>()) { }
-
-        public string ToJson()
+        public string GetMediaType(string extension)
         {
-            return SimpleJson.SimpleJson.SerializeObject(Data);
+            return this.mediaTypes.GetOr(extension,() => null);
         }
 
-        public static LugubrisSession Parse(string json)
+        public static InternetMediaTypes Parse(string json)
         {
-            return new LugubrisSession((IDictionary<string,object>)SimpleJson.SimpleJson.DeserializeObject(json));
+            var data = (IDictionary<string, object>)SimpleJson.SimpleJson.DeserializeObject(json);
+            return new InternetMediaTypes(data.ToDictionary(pair => pair.Key, pair => (string)pair.Value));
         }
     }
 }

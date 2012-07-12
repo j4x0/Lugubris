@@ -23,7 +23,7 @@ using System.Text;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace Lugubris
+namespace Lugubris.SessionManagers
 {
     public class FileSystemSessionManager : ISessionManager
     {
@@ -88,11 +88,14 @@ namespace Lugubris
             }
             byte[] date = Encoding.UTF8.GetBytes(DateTime.Now.ToString());
             writer.Write(date, 0, date.Length);
-            byte[] hash = encrypter.ComputeHash(byteBuffer);
-            var utf8hash = UTF8Encoding.UTF8.GetString(hash, 0, hash.Length);
-            if (this.SessionExists(utf8hash))
+            byte[] hash = encrypter.ComputeHash(byteBuffer.ToArray());
+            string hexString = "";
+            foreach (var b in hash)
+                hexString += String.Format("{0:x2}", b);
+            //var asciihash = Encoding.ASCII.GetString(hash, 0, hash.Length);
+            if (this.SessionExists(hexString))
                 return this.GenerateId();
-            else return utf8hash;
+            else return hexString;
         }
     }
 }

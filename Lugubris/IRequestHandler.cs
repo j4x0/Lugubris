@@ -20,29 +20,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SimpleJson;
+using System.Net;
 
 namespace Lugubris
 {
-    public class LugubrisSession 
+    public interface IRequestHandler
     {
-        public IDictionary<string, object> Data { get; private set; }
-
-        public LugubrisSession(IDictionary<string, object> data)
-        {
-            this.Data = data;
-        }
-
-        public LugubrisSession() : this(new Dictionary<string, object>()) { }
-
-        public string ToJson()
-        {
-            return SimpleJson.SimpleJson.SerializeObject(Data);
-        }
-
-        public static LugubrisSession Parse(string json)
-        {
-            return new LugubrisSession((IDictionary<string,object>)SimpleJson.SimpleJson.DeserializeObject(json));
-        }
+        byte[] Handle(string requestUri, HttpListenerContext context);
+        bool DoesHandle(string requestUri);
     }
 }

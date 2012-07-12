@@ -20,29 +20,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SimpleJson;
 
-namespace Lugubris
+namespace Lugubris.RequestHandlers.Dart
 {
-    public class LugubrisSession 
+    public class DartScriptHandler : IRequestHandler
     {
-        public IDictionary<string, object> Data { get; private set; }
-
-        public LugubrisSession(IDictionary<string, object> data)
+        public byte[] Handle(string requestUri, System.Net.HttpListenerContext context)
         {
-            this.Data = data;
+            throw new NotImplementedException();
         }
 
-        public LugubrisSession() : this(new Dictionary<string, object>()) { }
-
-        public string ToJson()
+        public bool DoesHandle(string requestUri)
         {
-            return SimpleJson.SimpleJson.SerializeObject(Data);
-        }
-
-        public static LugubrisSession Parse(string json)
-        {
-            return new LugubrisSession((IDictionary<string,object>)SimpleJson.SimpleJson.DeserializeObject(json));
+            return requestUri.EndsWith(".dart");
         }
     }
 }

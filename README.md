@@ -1,4 +1,4 @@
 Lugubris
 ========
 
-Lightweight webserver which enables you to serve content using IronPython scripts.
+Lugubris is a lightweight webserver which allows you to serve content using IronPython with the simplicity of PHP.

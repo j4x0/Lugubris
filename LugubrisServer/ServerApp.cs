@@ -34,7 +34,7 @@ namespace Lugubris.Cli
         {
             Console.WriteLine("Lugubris Server version {0}", ServerApp.VERSION);
             Console.WriteLine("Lugubris is licensed under GNU GPL version 3 <{0}>", "http://www.gnu.org/copyleft/gpl.html");
-            Console.WriteLine("Github: {0}", GITHUB);
+            Console.WriteLine("Github: {0}", ServerApp.GITHUB);
             string configPath = @"config.json";
             if (!File.Exists(configPath))
             {

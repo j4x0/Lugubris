@@ -20,29 +20,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SimpleJson;
+using System.IO.Compression;
+using System.IO;
 
-namespace Lugubris
+namespace Lugubris.ContentEncoders
 {
-    public class LugubrisSession 
+    public class DeflateEncoder : IContentEncoder
     {
-        public IDictionary<string, object> Data { get; private set; }
-
-        public LugubrisSession(IDictionary<string, object> data)
+        public byte[] Encode(byte[] data)
         {
-            this.Data = data;
+            var output = new MemoryStream();
+            var gzipstream = new DeflateStream(output, CompressionMode.Compress);
+            gzipstream.Write(data, 0, data.Length);
+            gzipstream.Close();
+            byte[] compressed = output.ToArray();
+            output.Close();
+            return compressed;
         }
 
-        public LugubrisSession() : this(new Dictionary<string, object>()) { }
-
-        public string ToJson()
+        public string GetName()
         {
-            return SimpleJson.SimpleJson.SerializeObject(Data);
-        }
-
-        public static LugubrisSession Parse(string json)
-        {
-            return new LugubrisSession((IDictionary<string,object>)SimpleJson.SimpleJson.DeserializeObject(json));
+            return "deflate";
         }
     }
 }

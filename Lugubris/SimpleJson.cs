@@ -1064,7 +1064,7 @@ namespace SimpleJson
 
         protected static bool SerializeObject(IJsonSerializerStrategy jsonSerializerStrategy, IEnumerable keys, IEnumerable values, StringBuilder builder)
         {
-            builder.Append("{");
+            builder.Append("{\n");
 
             IEnumerator ke = keys.GetEnumerator();
             IEnumerator ve = values.GetEnumerator();
@@ -1076,8 +1076,9 @@ namespace SimpleJson
                 object value = ve.Current;
 
                 if (!first)
-                    builder.Append(",");
+                    builder.Append(",\n");
 
+                builder.Append("\t");
                 if (key is string)
                     SerializeString((string)key, builder);
                 else
@@ -1090,7 +1091,7 @@ namespace SimpleJson
                 first = false;
             }
 
-            builder.Append("}");
+            builder.Append("\n}");
             return true;
         }
 

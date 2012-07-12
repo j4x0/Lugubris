@@ -1,0 +1,76 @@
+﻿
+<!--
+
+/**
+ * Lugubris
+ * Copyright (C) 2012  Jaco Ruit
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
+    -->
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>{0}</title>
+    <style>
+        body {{
+            text-align: center;
+            padding: 0px;
+            margin: 0px auto;
+            font-family:Arial;
+            background: url(http://i.imgur.com/C5JwR.jpg) no-repeat;
+            background-size:100%;
+        }}
+     
+        #container {{
+            margin: 0 auto !important;
+            height: 100% auto;
+            width: 800px;
+            background-color: #808080;
+        }}
+
+        #header {{
+            padding-top:10px;
+            margin-top:25px;
+            background-color: {3};
+            width: 100% auto;
+            height: 100px;
+        }}
+
+            #header h1 {{
+                font-size: 40px;
+            }}
+
+        #footer {{
+            font-size: 10px;
+            text-align: center;
+            padding-bottom: 5px;
+        }}
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="header">
+            <h1>{1}</h1>
+        </div>
+        {2}
+        <br/><br/>
+        <div id="footer">
+            Lugubris
+        </div>
+    </div>
+</body>
+</html>

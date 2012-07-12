@@ -21,6 +21,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Lugubris.ContentEncoders;
+using Lugubris.SessionManagers;
 using SimpleJson;
 
 namespace Lugubris
@@ -32,8 +34,10 @@ namespace Lugubris
         public bool DebugMode { get; private set; }
         public string LibraryPath { get; private set; }
         public string RoutesPath { get; private set; }
+        public IContentEncoder ContentEncoder { get; private set; }
         public LugubrisRouter Router { get; private set; }
         public ISessionManager SessionManager { get; private set; }
+        public InternetMediaTypes MediaTypes { get; private set; }
 
         public static LugubrisConfig Parse(string json)
         {
@@ -49,16 +53,35 @@ namespace Lugubris
                 default:
                     throw new Exception("Unknown session manager type: " + smt);
             }
+            var en = (string)data["content_encoder"];
+            IContentEncoder encoder = null;
+            switch (en)
+            {
+                case "gzip":
+                    encoder = new GzipEncoder();
+                    break;
+                case "deflate":
+                    encoder = new DeflateEncoder();
+                    break;
+                case "none":
+                    break;
+                default:
+                    throw new Exception("Unknown content encoder: " + en);
+            }
             var paths = (IDictionary<string, object>)data["paths"];
             var routesPath = (string)paths["routes"];
+            var mediaTypesPath = (string)paths["media_types"];
             return new LugubrisConfig
             {
                 Port = Convert.ToInt32(data["port"]),
                 RootPath = (string)paths["htdocs"],
                 LibraryPath = (string)paths["lib"],
+                DebugMode = Convert.ToBoolean(data["debug_mode"]),
                 SessionManager = manager,
                 RoutesPath = routesPath,
-                Router = LugubrisRouter.Parse(File.ReadAllText(routesPath))
+                Router = LugubrisRouter.Parse(File.ReadAllText(routesPath)),
+                MediaTypes = InternetMediaTypes.Parse(File.ReadAllText(mediaTypesPath)),
+                ContentEncoder = encoder
             };
         }
     }

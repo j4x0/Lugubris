@@ -20,29 +20,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SimpleJson;
 
 namespace Lugubris
 {
-    public class LugubrisSession 
+    public static class Utils
     {
-        public IDictionary<string, object> Data { get; private set; }
-
-        public LugubrisSession(IDictionary<string, object> data)
+        public static TValue GetOr<TKey, TValue>(this IDictionary<TKey, TValue> dic, TKey key, Func<TValue> or)
         {
-            this.Data = data;
+            return dic.ContainsKey(key) ? dic[key] : or();
         }
 
-        public LugubrisSession() : this(new Dictionary<string, object>()) { }
-
-        public string ToJson()
+        public static string Reverse(this string str)
         {
-            return SimpleJson.SimpleJson.SerializeObject(Data);
-        }
-
-        public static LugubrisSession Parse(string json)
-        {
-            return new LugubrisSession((IDictionary<string,object>)SimpleJson.SimpleJson.DeserializeObject(json));
+            var arr = str.ToCharArray();
+            Array.Reverse(arr);
+            return new String(arr);
         }
     }
 }

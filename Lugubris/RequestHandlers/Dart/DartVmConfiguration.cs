@@ -21,9 +21,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Lugubris
+namespace Lugubris.RequestHandlers.Dart
 {
-    class LugubrisHostApi
+    public class DartVmConfiguration
     {
+        public string Path { get; private set; }
+
+        public DartVmConfiguration Parse(string json)
+        {
+            var data = (IDictionary<string, string>)SimpleJson.SimpleJson.DeserializeObject(json);
+            return new DartVmConfiguration
+            {
+                Path = (string)data["vm_path"]
+            };
+        }
     }
 }

@@ -43,16 +43,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContentEncoders\DeflateEncoder.cs" />
+    <Compile Include="ContentEncoders\GzipEncoder.cs" />
+    <Compile Include="HtmlTemplates\MessagePage.cs" />
+    <Compile Include="IContentEncoder.cs" />
+    <Compile Include="InternetMediaTypes.cs" />
+    <Compile Include="IRequestHandler.cs" />
     <Compile Include="ISessionManager.cs" />
-    <Compile Include="LugubrisHostApi.cs" />
     <Compile Include="LugubrisRouter.cs" />
     <Compile Include="LugubrisServer.cs" />
     <Compile Include="LugubrisConfig.cs" />
     <Compile Include="LugubrisSession.cs" />
+    <Compile Include="RequestHandlers\Dart\DartScriptHandler.cs" />
+    <Compile Include="RequestHandlers\Dart\DartVmConfiguration.cs" />
+    <Compile Include="RequestHandlers\Python\PythonScriptHandler.cs" />
+    <Compile Include="ServerInfo.cs" />
     <Compile Include="SessionManagers\FileSystemSessionManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleJson.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="HtmlTemplates\MessageTemplate.html" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

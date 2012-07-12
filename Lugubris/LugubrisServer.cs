@@ -21,17 +21,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
-using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting; 
-using IronPython.Hosting;
-using IronPython.Runtime;
 using System.IO;
+using Lugubris.HtmlTemplates;
+using Lugubris.RequestHandlers;
 
 namespace Lugubris
 {
     public class LugubrisServer
     {
+        public static readonly string VERSION = "1.0.3-a";
+
         public LugubrisConfig Configuration { get; private set; }
+        public ServerInfo Info { get; private set; }
+        private List<IRequestHandler> requestHandlers;
         private HttpListener listener;
 
         public LugubrisServer(LugubrisConfig config)
@@ -39,6 +41,9 @@ namespace Lugubris
             this.Configuration = config;
             this.listener = new HttpListener();
             listener.Prefixes.Add("http://+:" + config.Port + "/");
+            this.requestHandlers = new List<IRequestHandler>();
+            this.Info = new ServerInfo();
+            this.AddRequestHandler(new PythonScriptHandler(this.Configuration, this.Info));
         }
 
         public void Start()
@@ -64,41 +69,18 @@ namespace Lugubris
             catch { }
         }
 
-        private void PrepareScope(ScriptScope scope, HttpListenerRequest request, HttpListenerResponse response, StringBuilder responseBuffer)
+        public void AddRequestHandler(IRequestHandler handler)
         {
-            scope.SetVariable("echo", new Action<string>((string str) => responseBuffer.Append(str)));
-            var requestData = new Dictionary<string,string>();
-            requestData.Add("contenttype", request.ContentType);
-            requestData.Add("useragent", request.UserAgent);
-            scope.SetVariable("__request__", requestData);
-            scope.SetVariable("add_route", new Action<string, string>((from, to) => 
-                {
-                    this.Configuration.Router.AddRoute(from,to);
-                }
-                ));
-            scope.SetVariable("delete_route", new Action<string>((from) =>
-                {
-                    this.Configuration.Router.DeleteRoute(from);
-                }
-                ));
-            scope.SetVariable("save_routes", new Action(() => this.Configuration.Router.Save(this.Configuration.RoutesPath)));
-            scope.SetVariable("set_header", new Action<string, object>((string field, object value) => 
-                {
-                    switch(field)
-                    {
-                        default:
-                            break;
-                    }
-                }
-                ));
-            scope.SetVariable("get_session", new Func<LugubrisSession>(() =>
-                {
-                    var cookie = request.Cookies["LUGUBRISSESS"];
-                    if (cookie == null)
-                        throw new Exception("No session found");
-                    return this.Configuration.SessionManager.GetSession(cookie.Value);
-                }
-            ));
+            if (this.requestHandlers.Contains(handler))
+                throw new Exception("This handler is already registered");
+            this.requestHandlers.Add(handler);
+        }
+
+        private IRequestHandler GetRequestHandler(string requestUrl)
+        {
+            foreach (var handler in this.requestHandlers)
+                if (handler.DoesHandle(requestUrl)) return handler;
+            return null;
         }
 
         private void HandleRequest(IAsyncResult result)
@@ -111,61 +93,48 @@ namespace Lugubris
             var translated = this.Configuration.Router.TranslateUrl(request.Url.AbsolutePath);
             var path = this.Configuration.RootPath +  translated;
             byte[] buffer = new byte[0];
-            if (!File.Exists(path))
+            if (File.Exists(path))
+            {
+                var handler = this.GetRequestHandler(path);
+                if (handler == null)
+                {
+                    var extension = path.Reverse().Split('.').First().Reverse();
+                    var ctype = this.Configuration.MediaTypes.GetMediaType(extension);
+                    if (ctype != null)
+                        response.ContentType = ctype;
+                    buffer = File.ReadAllBytes(path);
+                }
+                else
+                    buffer = handler.Handle(path, context);
+            }
+            else
             {
                 response.StatusCode = 404;
                 if (this.Configuration.DebugMode)
                 {
+                    var html = MessagePage.GetHtml(
+                        MessagePage.MessageType.Warning,
+                        "Lugubris - Not Found",
+                        "404 Not Found",
+                        "The server has not found anything matching the Request-URI"
+                        );
+                    buffer = UTF8Encoding.UTF8.GetBytes(html);
                 }
-            }    
-            else if (path.EndsWith(".py"))
-            {
-                StringBuilder responseBuffer = new StringBuilder();
-                var engine = Python.CreateEngine();
-                var scope = engine.CreateScope();
-                var searchPaths = engine.GetSearchPaths();
-                searchPaths.Add(this.Configuration.LibraryPath);
-                engine.SetSearchPaths(searchPaths);
-                this.PrepareScope(scope, request, response, responseBuffer);
-                try
-                {
-                    engine.ExecuteFile(path, scope);
-                }
-                catch (UnboundNameException e)
-                {
-                    response.StatusCode = 503;
-                    ExceptionOperations eo = engine.GetService<ExceptionOperations>();
-                    if (this.Configuration.DebugMode)
-                    {
-                    }
-                    Console.WriteLine(eo.FormatException(e));
-                }
-                catch (SyntaxErrorException e)
-                {
-                    response.StatusCode = 503;
-                    ExceptionOperations eo = engine.GetService<ExceptionOperations>();
-                    if (this.Configuration.DebugMode)
-                    {
-                    }
-                    Console.WriteLine(eo.FormatException(e));
-                }
-                catch (Exception e)
-                {
-                    response.StatusCode = 503;
-                    if (this.Configuration.DebugMode)
-                    {
-                    }
-                    Console.WriteLine(e.Message);
-                }
-                buffer = UTF8Encoding.UTF8.GetBytes(responseBuffer.ToString());
             }
-            else
+            var encoderName = this.Configuration.ContentEncoder.GetName();
+            if (this.Configuration.ContentEncoder != null && request.Headers["Accept-Encoding"].Contains(encoderName))
             {
-                buffer = File.ReadAllBytes(path);
+                buffer = this.Configuration.ContentEncoder.Encode(buffer);
+                response.AddHeader("Content-Encoding", encoderName);
             }
+            response.ContentLength64 = buffer.Length;
+            this.Info.BytesOut += buffer.Length;
+            response.AddHeader("Date", DateTime.Now.ToUniversalTime().ToString());
             if (buffer.Length > 0)
                 response.OutputStream.Write(buffer, 0, buffer.Length);
+            response.OutputStream.Close();
             response.Close();
+            this.Info.RequestsHandled++;
             this.Listen();
         }
 
